@@ -32,6 +32,8 @@ def _get_build_deps_from_a_root_log(root_log):
     state = 0
 
     for file_line in root_log.splitlines():
+        split_line = file_line.split()
+        line_len = len(split_line)
 
         # 0/
         # parts of the log I don't really care about
@@ -52,7 +54,7 @@ def _get_build_deps_from_a_root_log(root_log):
             # DNF5 does this after "Repositories loaded" and quotes the NVR;
             # DNF4 does this before "Dependencies resolved" without the quotes.
             if "is already installed." in file_line:
-                pkg_name = file_line.split()[3].strip('"').rsplit("-",2)[0]
+                pkg_name = split_line[3].strip('"').rsplit("-", 2)[0]
                 required_pkgs.append(pkg_name)
 
             # That's all! Next state! (DNF4)
@@ -74,14 +76,14 @@ def _get_build_deps_from_a_root_log(root_log):
             # DNF5 does this after "Repositories loaded" and quotes the NVR, but
             # sometimes prints this in the middle of a dependency line.
             if "is already installed." in file_line:
-                pkg_index = file_line.split().index("already") - 2
-                pkg_name = file_line.split()[pkg_index].strip('"').rsplit("-",2)[0]
+                pkg_index = split_line.index("already") - 2
+                pkg_name = split_line[pkg_index].strip('"').rsplit("-", 2)[0]
                 required_pkgs.append(pkg_name)
 
             # The next line will be the first package. Next state!
             # DNF5 reports "Installing: ## packages" in the Transaction Summary,
             # which we need to ignore
-            if "Installing:" in file_line and len(file_line.split()) == 3:
+            if "Installing:" in file_line and line_len == 3:
                 state += 1
 
 
@@ -97,12 +99,12 @@ def _get_build_deps_from_a_root_log(root_log):
                 state = 2
 
             # Sometimes DNF5 prints "Package ... is already installed" in middle of the output.
-            elif file_line.split()[2] == "Package" and file_line.split()[-1] == "installed.":
-                pkg_name = file_line.split()[3].strip('"').rsplit("-",2)[0]
+            elif split_line[2] == "Package" and split_line[-1] == "installed.":
+                pkg_name = split_line[3].strip('"').rsplit("-", 2)[0]
                 required_pkgs.append(pkg_name)
 
             else:
-                # I need to deal with the following thing...
+                # We need to deal with the following...
                 #
                 # DEBUG util.py:446:   gobject-introspection-devel     aarch64 1.70.0-1.fc36              build 1.1 M
                 # DEBUG util.py:446:   graphene-devel                  aarch64 1.10.6-3.fc35              build 159 k
@@ -114,12 +116,12 @@ def _get_build_deps_from_a_root_log(root_log):
                 # The "gstreamer1-plugins-bad-free-devel" package name is too long to fit in the column,
                 # so it gets split on two lines.
                 #
-                # Which if I take the usual file_line.split()[2] I get the correct name,
-                # but the next line gives me "aarch64" as a package name which is wrong.
+                # When using the usual split_line[2] we get the correct name,
+                # but the next line gives us "aarch64" as a package name which is wrong.
                 #
-                # So the usual line has file_line.split() == 8
-                # The one with the long package name has file_line.split() == 3
-                # and the one following it has file_line.split() == 7
+                # So the usual line has line_len == 8
+                # The one with the long package name has line_len == 3
+                # and the one following it has line_len == 7
                 #
                 # One more thing... long release!
                 #
@@ -128,39 +130,36 @@ def _get_build_deps_from_a_root_log(root_log):
                 # DEBUG util.py:446:                                                                      build  71 k
                 # DEBUG util.py:446:   tpm2-tss-devel               aarch64 3.1.0-4.fc36                  build 315 k
                 #
-                # So the good one here is file_line.split() == 5.
-                # And the following is also file_line.split() == 5. Fun!
+                # So the good one here is line_len == 5.
+                # And the following is also line_len == 5. Fun!
                 #
                 # So if it ends with B, k, M, G it's the wrong line, so skip, otherwise take the package name.
                 #
-                # I can also anticipate both get long... that would mean I need to skip file_line.split() == 4.
+                # we can also anticipate both get long... that would mean we need to skip line_len == 4.
 
-                if len(file_line.split()) == 10 or len(file_line.split()) == 11:
+                if line_len in (10, 11):
                     # Sometimes DNF5 prints "Package ... is already installed" in the middle of a line
-                    pkg_index = file_line.split().index("already") - 2
-                    pkg_name = file_line.split()[pkg_index].strip('"').rsplit("-",2)[0]
+                    pkg_index = split_line.index("already") - 2
+                    pkg_name = split_line[pkg_index].strip('"').rsplit("-", 2)[0]
                     required_pkgs.append(pkg_name)
-                    if pkg_index == 3:
-                        pkg_name = file_line.split()[7]
-                    else:
-                        pkg_name = file_line.split()[2]
+                    pkg_name = split_line[7] if pkg_index == 3 else split_line[2]
                     required_pkgs.append(pkg_name)
 
-                # TODO: len(file_line.split()) == 9 ??
+                # TODO: line_len == 9 ??
 
-                elif len(file_line.split()) == 8 or len(file_line.split()) == 3:
-                    pkg_name = file_line.split()[2]
+                elif line_len in (3, 8):
+                    pkg_name = split_line[2]
                     required_pkgs.append(pkg_name)
 
-                elif len(file_line.split()) == 7 or len(file_line.split()) == 4:
+                elif line_len in (4, 7):
                     continue
 
-                elif len(file_line.split()) == 6 or len(file_line.split()) == 5:
+                elif line_len in (5, 6):
                     # DNF5 uses B/KiB/MiB/GiB, DNF4 uses B/k/M/G
-                    if file_line.split()[4] in ["B", "KiB", "k", "MiB", "M", "GiB", "G"]:
+                    if split_line[4] in ["B", "KiB", "k", "MiB", "M", "GiB", "G"]:
                         continue
                     else:
-                        pkg_name = file_line.split()[2]
+                        pkg_name = split_line[2]
                         required_pkgs.append(pkg_name)
 
                 else:
