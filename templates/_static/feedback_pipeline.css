@@ -77,7 +77,7 @@ h1 {
 }
 
 .text-warning {
-  color: #ad8200!important;
+  color: #ad8200 !important;
 }
 
 /* Navigation */
@@ -120,11 +120,11 @@ div.main-menu {
 }
 
 tr.sort_control_row:first-child th {
-  border-top: 0!important;
-  
+  border-top: 0 !important;
 }
+
 tr.sort_control_row th {
-  border-bottom: 1px solid #ccc!important;
+  border-bottom: 1px solid #ccc !important;
 }
 
 table.dataTable thead td,
@@ -133,7 +133,7 @@ table.dataTable thead th {
 }
 
 a.card-link {
-  white-space:nowrap!important;
+  white-space: nowrap !important;
 }
 
 /* Grid table */
@@ -156,7 +156,7 @@ ul.list-packages li {
   border-bottom: #6c757d 1px solid;
 }
 
-ul.list-packages li:irst-child {
+ul.list-packages li:first-child {
   border-top: #6c757d 1px solid;
 }
 
@@ -169,7 +169,7 @@ ul.list-packages li.required-package {
 
 #table_packages > thead > tr > th.dt-orderable-asc.dt-orderable-desc:not([aria-sort]),
 .sort_control_row .dt-orderable-asc.dt-orderable-desc[aria-sort="ascending"],
-sort_control_row .dt-orderable-asc.dt-orderable-desc[aria-sort="descending"],
+.sort_control_row .dt-orderable-asc.dt-orderable-desc[aria-sort="descending"],
 table.dataTable thead .sorting_asc_disabled,
 table.dataTable thead .sorting_desc_disabled {
 
@@ -208,7 +208,7 @@ table.dataTable thead .sort_control_row {
 
 
 table.table-packages {
-width: 100%;
+  width: 100%;
 }
 
 table.table-packages tr.sort_control_row,
@@ -222,13 +222,13 @@ table.table-packages tr.heading {
 }
 
 table.table-packages tr {
-border-bottom: #6c757d 1px solid;
+  border-bottom: #6c757d 1px solid;
 }
 
 table.table-packages td,
 table.table-packages th {
-padding-left: 10px;
-padding-right: 10px;
+  padding-left: 10px;
+  padding-right: 10px;
 }
 
 table.table-packages td {
@@ -243,22 +243,22 @@ table.table-packages td.required {
 
 table.table-packages tr.env,
 table.table-packages td.env {
-  background-color: #e3ece1!important;
+  background-color: #e3ece1 !important;
 }
 
 table.table-packages tr.all-pkgs-col,
 table.table-packages td.all-pkgs-col {
-  background-color: #e9ecef!important;
+  background-color: #e9ecef !important;
 }
 
 table.table-packages tr.dependency {
-  background-color: white!important;
+  background-color: white !important;
 }
 
 
 table.table-packages tr.unwanted,
 table.table-packages td.unwanted {
-  background-color: #f1c8c8!important;
+  background-color: #f1c8c8 !important;
 }
 
 
@@ -280,16 +280,16 @@ table.table-packages tbody th {
 }
 
 table.table-packages.table-packages-muted tbody tr {
-  border-bottom: #d1d1d3 1px solid!important;
-  border-top: #d1d1d3 1px solid!important;
+  border-bottom: #d1d1d3 1px solid !important;
+  border-top: #d1d1d3 1px solid !important;
 }
 
 table.table-packages.table-packages-muted tbody tr:first-child {
-  border-top: 0!important;
+  border-top: 0 !important;
 }
 
 table.table-packages.table-packages-muted tbody tr:last-child {
-  border-bottom: 0!important;
+  border-bottom: 0 !important;
 }
 
 #table_packages_filter,
