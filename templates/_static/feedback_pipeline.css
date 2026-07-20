@@ -340,3 +340,17 @@ table.table-packages.table-packages-muted tbody tr:last-child {
 table.table-downloads {
   margin-bottom: 0;
 }
+
+div.col-sm-8.col-md-9.col-lg-10 {
+  padding-bottom: 1.5rem;
+}
+
+.runtime {
+  background-color: #e9ecef;
+  color: grey;
+  border-top: 1px solid #212529;
+  padding-right: 15px;
+  padding-left: 15px;
+  margin-right: auto;
+  margin-left: auto;
+}
