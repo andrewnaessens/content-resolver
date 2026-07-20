@@ -10,6 +10,10 @@ __pycache__
 *.so
 .Python
 
+# Virtual environments
+.venv
+venv
+
 config
 configs
 out
@@ -25,3 +29,5 @@ actual_output
 actual_configs
 content-resolver-input
 debug_*.json
+
+.claude
