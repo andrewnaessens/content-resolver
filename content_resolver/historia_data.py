@@ -451,21 +451,9 @@ def _generate_chartjs_data(historic_data, query):
         # Second, get the actual data for everything that's needed
         entry_data["datasets"] = []
 
+        dataset_names = ["env", "req", "dep"]
         if view_all_arches["has_buildroot"]:
-            dataset_names = [
-                "env",
-                "req",
-                "dep",
-                "build_base",
-                "build_level_1",
-                "build_level_2_plus"
-            ]
-        else:
-            dataset_names = [
-                "env",
-                "req",
-                "dep"
-            ]
+            dataset_names.extend(["build_base", "build_level_1", "build_level_2_plus"])
 
         dataset_metadata = {
             "env": {
