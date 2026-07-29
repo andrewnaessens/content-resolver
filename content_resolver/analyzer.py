@@ -1177,65 +1177,57 @@ class Analyzer:
         self.data["envs"] = envs
 
     def _return_failed_workload_env_err(self, workload_conf, env_conf, repo, arch):
-        workload = {}
-
-        workload["workload_conf_id"] = workload_conf["id"]
-        workload["env_conf_id"] = env_conf["id"]
-        workload["repo_id"] = repo["id"]
-        workload["arch"] = arch
-
-        workload["pkg_env_ids"] = []
-        workload["pkg_added_ids"] = []
-        workload["pkg_placeholder_ids"] = []
-
-        workload["pkg_relations"] = []
-
-        workload["errors"] = {}
-        workload["errors"]["non_existing_pkgs"] = []
-        workload["succeeded"] = False
-        workload["env_succeeded"] = False
-
-        workload["errors"]["message"] = """
+        workload = {
+            "workload_conf_id": workload_conf["id"],
+            "env_conf_id": env_conf["id"],
+            "repo_id": repo["id"],
+            "arch": arch,
+            "pkg_env_ids": [],
+            "pkg_added_ids": [],
+            "pkg_placeholder_ids": [],
+            "pkg_relations": [],
+            "errors": {
+                "non_existing_pkgs": [],
+                "message": """
         Failed to analyze this workload because of an error while analyzing the environment.
 
         Please see the associated environment results for a detailed error message.
-        """
+        """,
+            },
+            "succeeded": False,
+            "env_succeeded": False,
+        }
 
         return workload
 
 
     def _analyze_workload(self, workload_conf, env_conf, repo, arch):
 
-        workload = {}
-
-        workload["workload_conf_id"] = workload_conf["id"]
-        workload["env_conf_id"] = env_conf["id"]
-        workload["repo_id"] = repo["id"]
-        workload["arch"] = arch
-
-        workload["pkg_env_ids"] = []
-        workload["pkg_added_ids"] = []
-        workload["pkg_placeholder_ids"] = []
-        workload["srpm_placeholder_names"] = []
-
-        workload["pkg_relations"] = []
-
-        workload["errors"] = {}
-        workload["errors"]["non_existing_pkgs"] = []
-        workload["errors"]["non_existing_placeholder_deps"] = []
-
-        workload["warnings"] = {}
-        workload["warnings"]["non_existing_pkgs"] = []
-        workload["warnings"]["non_existing_placeholder_deps"] = []
-        workload["warnings"]["message"] = None
-
-        workload["succeeded"] = True
-        workload["env_succeeded"] = True
-
-
         # Figure out the workload labels
         # It can only have labels that are in both the workload_conf and the env_conf
-        workload["labels"] = list(set(workload_conf["labels"]) & set(env_conf["labels"]))
+        workload = {
+            "workload_conf_id": workload_conf["id"],
+            "env_conf_id": env_conf["id"],
+            "repo_id": repo["id"],
+            "arch": arch,
+            "pkg_env_ids": [],
+            "pkg_added_ids": [],
+            "pkg_placeholder_ids": [],
+            "srpm_placeholder_names": [],
+            "pkg_relations": [],
+            "errors": {
+                "non_existing_pkgs": [],
+                "non_existing_placeholder_deps": [],
+            },
+            "warnings": {
+                "non_existing_pkgs": [],
+                "non_existing_placeholder_deps": [],
+                "message": None,
+            },
+            "succeeded": True,
+            "env_succeeded": True,
+            "labels": list(set(workload_conf["labels"]) & set(env_conf["labels"])),
+        }
 
         with dnf5_base() as base:
             config = base.get_config()
@@ -1613,27 +1605,30 @@ class Analyzer:
             queue_result.put(workload)
         except Exception as e:
             # Create a failed workload result instead of crashing
-            workload = {}
-            workload["workload_conf_id"] = workload_conf["id"]
-            workload["env_conf_id"] = env_conf["id"]
-            workload["repo_id"] = repo["id"]
-            workload["arch"] = arch
-            workload["pkg_env_ids"] = []
-            workload["pkg_added_ids"] = []
-            workload["pkg_placeholder_ids"] = []
-            workload["srpm_placeholder_names"] = []
-            workload["pkg_relations"] = []
-            workload["errors"] = {}
-            workload["errors"]["non_existing_pkgs"] = []
-            workload["errors"]["non_existing_placeholder_deps"] = []
-            workload["errors"]["message"] = f"Workload analysis failed with exception:\n{type(e).__name__}: {str(e)}\n\nTraceback:\n{traceback.format_exc()}"
-            workload["warnings"] = {}
-            workload["warnings"]["non_existing_pkgs"] = []
-            workload["warnings"]["non_existing_placeholder_deps"] = []
-            workload["warnings"]["message"] = None
-            workload["succeeded"] = False
-            workload["env_succeeded"] = False
-            workload["labels"] = list(set(workload_conf["labels"]) & set(env_conf["labels"]))
+            workload = {
+                "workload_conf_id": workload_conf["id"],
+                "env_conf_id": env_conf["id"],
+                "repo_id": repo["id"],
+                "arch": arch,
+                "pkg_env_ids": [],
+                "pkg_added_ids": [],
+                "pkg_placeholder_ids": [],
+                "srpm_placeholder_names": [],
+                "pkg_relations": [],
+                "errors": {
+                    "non_existing_pkgs": [],
+                    "non_existing_placeholder_deps": [],
+                    "message": f"Workload analysis failed with exception:\n{type(e).__name__}: {str(e)}\n\nTraceback:\n{traceback.format_exc()}",
+                },
+                "warnings": {
+                    "non_existing_pkgs": [],
+                    "non_existing_placeholder_deps": [],
+                    "message": None,
+                },
+                "succeeded": False,
+                "env_succeeded": False,
+                "labels": list(set(workload_conf["labels"]) & set(env_conf["labels"])),
+            }
             queue_result.put(workload)
             # Log error to stderr so it appears in logs
             err_log(f" ERROR analyzing workload {workload_conf['id']}:{env_conf['id']}:{repo['id']}:{arch}-> {e}", file=sys.stderr)
@@ -1717,28 +1712,30 @@ class Analyzer:
                 log("")
 
                 # Create a failed workload result instead of crashing
-                workload = {}
-                workload["workload_conf_id"] = workload_conf["id"]
-                workload["env_conf_id"] = env_conf["id"]
-                workload["repo_id"] = repo["id"]
-                workload["arch"] = arch
-                workload["pkg_env_ids"] = []
-                workload["pkg_added_ids"] = []
-                workload["pkg_placeholder_ids"] = []
-                workload["srpm_placeholder_names"] = []
-                workload["pkg_relations"] = []
-                workload["errors"] = {}
-                workload["errors"]["non_existing_pkgs"] = []
-                workload["errors"]["non_existing_placeholder_deps"] = []
-                workload["errors"]["message"] = f"Workload analysis timed out after 222 seconds or subprocess crashed"
-                workload["warnings"] = {}
-                workload["warnings"]["non_existing_pkgs"] = []
-                workload["warnings"]["non_existing_placeholder_deps"] = []
-                workload["warnings"]["message"] = None
-                workload["succeeded"] = False
-                workload["env_succeeded"] = False
-                workload["labels"] = list(set(workload_conf["labels"]) & set(env_conf["labels"]))
-                results[workload_id] = workload
+                results[workload_id] = {
+                    "workload_conf_id": workload_conf["id"],
+                    "env_conf_id": env_conf["id"],
+                    "repo_id": repo["id"],
+                    "arch": arch,
+                    "pkg_env_ids": [],
+                    "pkg_added_ids": [],
+                    "pkg_placeholder_ids": [],
+                    "srpm_placeholder_names": [],
+                    "pkg_relations": [],
+                    "errors": {
+                        "non_existing_pkgs": [],
+                        "non_existing_placeholder_deps": [],
+                        "message": f"Workload analysis timed out after 222 seconds or subprocess crashed",
+                    },
+                    "warnings": {
+                        "non_existing_pkgs": [],
+                        "non_existing_placeholder_deps": [],
+                        "message": None,
+                    },
+                    "succeeded": False,
+                    "env_succeeded": False,
+                    "labels": list(set(workload_conf["labels"]) & set(env_conf["labels"])),
+                }
             else:
                 workload = queue_result.get()
                 results[workload_id] = workload
