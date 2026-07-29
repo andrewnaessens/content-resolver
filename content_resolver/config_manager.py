@@ -118,9 +118,8 @@ class ConfigManager:
             config["source"]["repos"][id]["name"] = name
             try:
                 config["source"]["repos"][id]["baseurl"] = repo_data["baseurl"]
-            except KeyError:
-                # FIXME:  No reference for `yaml_file`
-                raise ConfigError(f"'{yml_file}.yaml' - is invalid. Repo {id} doesn't list baseurl.")
+            except KeyError as err:
+                raise ConfigError(f"'{document_id}.yaml' - is invalid. Repo {id} doesn't list baseurl.") from err
             config["source"]["repos"][id]["priority"] = priority
             config["source"]["repos"][id]["exclude"] = exclude
             config["source"]["repos"][id]["limit_arches"] = limit_arches
@@ -823,7 +822,7 @@ class ConfigManager:
                     try:
                         document = yaml.safe_load(file)
                     except yaml.YAMLError as err:
-                        raise ConfigError(f"Error loading a config '{yml_file}': {err}")
+                        raise ConfigError(f"Error loading a config '{yml_file}': {err}") from err
                     
                     # Only accept yaml files stating their purpose!
                     if not ("document" in document and "version" in document):
@@ -930,8 +929,8 @@ class ConfigManager:
             try:
                 try:
                     json_data = self.load_data(os.path.join(directory, json_file))
-                except:
-                    raise ConfigError(f"Error loading a JSON data file '{json_file}': {err}")
+                except Exception as err:
+                    raise ConfigError(f"Error loading a JSON data file '{json_file}': {err}") from err
                 
                 # Only accept json files stating their purpose!
                 if not ("document_type" in json_data and "version" in json_data):

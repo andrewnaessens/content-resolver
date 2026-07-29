@@ -20,7 +20,9 @@ def _generate_html_page(template_name, template_data, page_name, settings):
 
     page = template.render(**template_data)
 
-    filename = (f"{page_name.replace(":", "--")}.html")
+    # Prevent path traversal by extracting only the basename
+    safe_page_name = os.path.basename(page_name.replace(":", "--"))
+    filename = f"{safe_page_name}.html"
 
     log(f"  Writing file...  ({filename})")
     with open(os.path.join(output, filename), "w") as file:

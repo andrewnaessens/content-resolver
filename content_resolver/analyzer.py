@@ -6,6 +6,7 @@ import os
 import sys
 import tempfile
 import time
+import traceback
 import urllib.request
 from concurrent.futures import ProcessPoolExecutor, as_completed
 
@@ -720,6 +721,8 @@ class Analyzer:
             # Get available variants from composeinfo.json (if configured)
             available_variants = self._get_available_compose_variants(repo, arch)
 
+            # Initialize repo_sack & repo_names_to_load
+            repo_sack = base.get_repo_sack()
             repo_names_to_load = []
             for repo_name, repo_data in repo["source"]["repos"].items():
                 if repo_data["limit_arches"] and arch not in repo_data["limit_arches"]:
@@ -734,7 +737,6 @@ class Analyzer:
 
                 log(f"  Including {repo_name}")
 
-                repo_sack = base.get_repo_sack()
                 new_repo = repo_sack.create_repo(repo_name)
                 repo_config = new_repo.get_config()
                 repo_config.get_baseurl_option().set([repo_data["baseurl"]])
@@ -1544,7 +1546,7 @@ class Analyzer:
 
                 if is_repo_conflict and not is_real_error:
                     # Repo priority conflict - expected behavior, ignore
-                    log(f"  Ignoring repository priority conflict (version mismatch between repos)")
+                    log("  Ignoring repository priority conflict (version mismatch between repos)")
                 else:
                     # Real dependency failure
                     workload["succeeded"] = False
@@ -3305,7 +3307,8 @@ class Analyzer:
                         elif pkg["level_number"] > 1:
                             category = "build_level_2_plus"
 
-                    view_all_arches["numbers"]["pkgs"][category] += 1
+                    if category is not None:
+                        view_all_arches["numbers"]["pkgs"][category] += 1
 
                 view_all_arches["numbers"]["pkgs"]["runtime"] = \
                     view_all_arches["numbers"]["pkgs"]["env"] + \
@@ -3333,7 +3336,8 @@ class Analyzer:
                         elif pkg["level_number"] > 1:
                             category = "build_level_2_plus"
 
-                    view_all_arches["numbers"]["srpms"][category] += 1
+                    if category is not None:
+                        view_all_arches["numbers"]["srpms"][category] += 1
 
                 view_all_arches["numbers"]["srpms"]["runtime"] = \
                     view_all_arches["numbers"]["srpms"]["env"] + \
