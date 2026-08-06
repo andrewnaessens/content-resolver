@@ -437,24 +437,31 @@
     $(document).ready(function () {
 
         function plot_graph(chartData) {
-            var chLine = document.getElementById("chLine");
+            const chLine = document.getElementById("chLine");
             if (chLine) {
+                // Add fill to each dataset with transparency
+                chartData.datasets.forEach(function(dataset) {
+                    dataset.fill = true;
+                });
+
                 new Chart(chLine, {
                     type: 'line',
                     data: chartData,
                     options: {
                         scales: {
-                            yAxes: [{
+                            y: {
+                                beginAtZero: true,
                                 ticks: {
-                                    beginAtZero: true,
                                     callback: function (value, index, values) {
                                         return value + " SRPMs";
                                     }
                                 }
-                            }]
+                            }
                         },
-                        legend: {
-                            display: true
+                        plugins: {
+                            legend: {
+                                display: true
+                            }
                         },
                         spanGaps: true,
                         maintainAspectRatio: false,
