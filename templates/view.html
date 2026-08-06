@@ -40,9 +40,9 @@ dependency
 {% elif pkg.in_workload_ids_dep %}
 <span class="badge text-bg-secondary">Dependency</span>
 {% elif pkg.in_buildroot_of_srpm_id_env %}
-<span class="badge text-bg-secondary" style="background-color: #a39e87">Base Buildroot</span>
+<span class="badge text-bg-secondary" style="background-color: #a39e87 !important">Base Buildroot</span>
 {% elif pkg.in_buildroot_of_srpm_id_req or pkg.in_buildroot_of_srpm_id_dep %}
-<span class="badge text-bg-secondary" style="background-color: #999">Buildroot level {{pkg.level_number}}</span>
+<span class="badge text-bg-secondary" style="background-color: #999 !important">Buildroot level {{pkg.level_number}}</span>
 {% else %}
 (unknown)
 {% endif %}

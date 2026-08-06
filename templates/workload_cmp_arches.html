@@ -75,7 +75,7 @@
                 {% for arch in columns.keys() %}
                 <th class="group-first-col" colspan=4>
                     {{arch}}
-                    <span class="font-weight-normal">
+                    <span class="fw-normal">
                         {% if not query.workload_succeeded(workload_conf_id,env_conf.id,repo.id,arch) %}
                         (<span class="text-danger">Errors</span>)
                         {% elif query.workload_warnings(workload_conf_id,env_conf_id,repo_id,arch) %}
