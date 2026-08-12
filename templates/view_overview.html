@@ -35,21 +35,21 @@
                         <hr>
                         <div class="row">
                             <div class="col-4">
-                                <span class="badge badge-warning">Environment</span>
+                                <span class="badge text-bg-warning">Environment</span>
                                 <br>
                                 {{ view_all_arches.numbers.pkgs.env }} <small>RPMs</small>
                                 <br>
                                 {{ view_all_arches.numbers.srpms.env }} <small>SRPMs</small>
                             </div>
                             <div class="col-4">
-                                <span class="badge badge-success">Required</span>
+                                <span class="badge text-bg-success">Required</span>
                                 <br>
                                 {{ view_all_arches.numbers.pkgs.req }} <small>RPMs</small>
                                 <br>
                                 {{ view_all_arches.numbers.srpms.req }} <small>SRPMs</small>
                             </div>
                             <div class="col-4">
-                                <span class="badge badge-secondary">Dependency</span>
+                                <span class="badge text-bg-secondary">Dependency</span>
                                 <br>
                                 {{ view_all_arches.numbers.pkgs.dep }} <small>RPMs</small>
                                 <br>
@@ -73,21 +73,21 @@
                                 <hr>
                                 <div class="row">
                                     <div class="col-4">
-                                        <span class="badge badge-warning">Environment</span>
+                                        <span class="badge text-bg-warning">Environment</span>
                                         <br>
                                         {{ view_all_arches.numbers.pkgs.env }} <small>RPMs</small>
                                         <br>
                                         {{ view_all_arches.numbers.srpms.env }} <small>SRPMs</small>
                                     </div>
                                     <div class="col-4">
-                                        <span class="badge badge-success">Required</span>
+                                        <span class="badge text-bg-success">Required</span>
                                         <br>
                                         {{ view_all_arches.numbers.pkgs.req }} <small>RPMs</small>
                                         <br>
                                         {{ view_all_arches.numbers.srpms.req }} <small>SRPMs</small>
                                     </div>
                                     <div class="col-4">
-                                        <span class="badge badge-secondary">Dependency</span>
+                                        <span class="badge text-bg-secondary">Dependency</span>
                                         <br>
                                         {{ view_all_arches.numbers.pkgs.dep }} <small>RPMs</small>
                                         <br>
@@ -109,24 +109,24 @@
                                 <hr>
                                 <div class="row">
                                     <div class="col-4">
-                                        <span class="badge badge-secondary" style="background-color: #a39e87">Base
-                                            Buildroot</span>
+                                        <span class="buildroot-base badge text-bg-secondary">
+                                            Base Buildroot</span>
                                         <br>
                                         {{ view_all_arches.numbers.pkgs.build_base }} <small>RPMs</small>
                                         <br>
                                         {{ view_all_arches.numbers.srpms.build_base }} <small>SRPMs</small>
                                     </div>
                                     <div class="col-4">
-                                        <span class="badge badge-secondary" style="background-color: #999">Buildroot
-                                            level 1</span>
+                                        <span class="buildroot-level-1 badge text-bg-secondary">
+                                            Buildroot level 1</span>
                                         <br>
                                         {{ view_all_arches.numbers.pkgs.build_level_1 }} <small>RPMs</small>
                                         <br>
                                         {{ view_all_arches.numbers.srpms.build_level_1 }} <small>SRPMs</small>
                                     </div>
                                     <div class="col-4">
-                                        <span class="badge badge-secondary" style="background-color: #999">Buildroot
-                                            level 2+</span>
+                                        <span class="buildroot-level-2 badge text-bg-secondary">
+                                            Buildroot level 2+</span>
                                         <br>
                                         {{ view_all_arches.numbers.pkgs.build_level_2_plus }} <small>RPMs</small>
                                         <br>
@@ -147,22 +147,22 @@
 
                     <small>
                         <h6>Legend</h6>
-                        <span class="badge badge-warning">Environment</span> - Packages pre-installed in every
+                        <span class="badge text-bg-warning">Environment</span> - Packages pre-installed in every
                         workload.
                         <br>
-                        <span class="badge badge-success">Required</span> - Packages explicitly required in the
+                        <span class="badge text-bg-success">Required</span> - Packages explicitly required in the
                         workloads.
                         <br>
-                        <span class="badge badge-secondary">Dependency</span> - Runtime dependencies.
+                        <span class="badge text-bg-secondary">Dependency</span> - Runtime dependencies.
                         {% if view_all_arches.has_buildroot %}
                         <br>
-                        <span class="badge badge-secondary" style="background-color: #a39e87">Base Buildroot</span>
+                        <span class="badge text-bg-secondary" style="background-color: #a39e87 !important">Base Buildroot</span>
                         - Packages always present in the buildroot. Typically the 'build' group.
                         <br>
-                        <span class="badge badge-secondary" style="background-color: #999">Buildroot level 1</span>
+                        <span class="buildroot-level-1 badge text-bg-secondary">Buildroot level 1</span>
                         - Packages needed to build all the above.
                         <br>
-                        <span class="badge badge-secondary" style="background-color: #999">Buildroot level 2+</span>
+                        <span class="buildroot-level-2 badge text-bg-secondary">Buildroot level 2+</span>
                         - Packages needed to build all the above. Basially just build dependencies of build
                         dependencies. There's multiple levels, each only present to build the previous level.
                         {% endif %}
@@ -437,24 +437,31 @@
     $(document).ready(function () {
 
         function plot_graph(chartData) {
-            var chLine = document.getElementById("chLine");
+            const chLine = document.getElementById("chLine");
             if (chLine) {
+                // Add fill to each dataset with transparency
+                chartData.datasets.forEach(function(dataset) {
+                    dataset.fill = true;
+                });
+
                 new Chart(chLine, {
                     type: 'line',
                     data: chartData,
                     options: {
                         scales: {
-                            yAxes: [{
+                            y: {
+                                beginAtZero: true,
                                 ticks: {
-                                    beginAtZero: true,
                                     callback: function (value, index, values) {
                                         return value + " SRPMs";
                                     }
                                 }
-                            }]
+                            }
                         },
-                        legend: {
-                            display: true
+                        plugins: {
+                            legend: {
+                                display: true
+                            }
                         },
                         spanGaps: true,
                         maintainAspectRatio: false,

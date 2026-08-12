@@ -13,7 +13,7 @@
         <br><br><br><br>
         <div class="text-center">
             <div class="spinner-border" role="status">
-                <span class="sr-only">Loading...</span>
+                <span class="visually-hidden">Loading...</span>
             </div>
             <br>
             <span>Loading...</span>
@@ -107,21 +107,21 @@
 
 
         function plot_graph(chartData) {
-            var chLine = document.getElementById("chLine");
+            const chLine = document.getElementById("chLine");
             if (chLine) {
                 new Chart(chLine, {
                     type: 'line',
                     data: chartData,
                     options: {
                         scales: {
-                            yAxes: [{
-                                ticks: {
-                                    beginAtZero: true
-                                }
-                            }]
+                            y: {
+                                beginAtZero: true
+                            }
                         },
-                        legend: {
-                            display: false
+                        plugins: {
+                            legend: {
+                                display: false
+                            }
                         },
                         spanGaps: true,
                         maintainAspectRatio: false

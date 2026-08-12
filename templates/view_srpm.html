@@ -206,9 +206,9 @@
                 {% for level, sublevels in srpm.maintainer_recommendation_details.items() %}
                 <h5 class="card-title">Level {{level}}</h5>
                 {% if level == "0" %}
-                <p>Includes <span class="badge badge-success">Required</span> and <span class="badge badge-secondary">Dependency</span>.</p>
+                <p>Includes <span class="badge text-bg-success">Required</span> and <span class="badge text-bg-secondary">Dependency</span>.</p>
                 {% else %}
-                <p>Includes <span class="badge badge-secondary" style="background-color: #999">Buildroot level {{level}}</span> which are direct build dependencies of the previous level, along with their own runtime dependencies.</p>
+                <p>Includes <span class="buildroot-level-{{ level }} badge text-bg-secondary">Buildroot level {{level}}</span> which are direct build dependencies of the previous level, along with their own runtime dependencies.</p>
                 {% endif %}
                 <table class="table-packages table-packages-muted" id="table_packages_{{level}}">
                     <thead>

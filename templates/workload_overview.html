@@ -156,24 +156,26 @@
 <script>
     $(document).ready(function () {
         function plot_graph(chartData) {
-            var chLine = document.getElementById("chLine");
+            const chLine = document.getElementById("chLine");
             if (chLine) {
                 new Chart(chLine, {
                     type: 'line',
                     data: chartData,
                     options: {
                         scales: {
-                            yAxes: [{
+                            y: {
+                                beginAtZero: true,
                                 ticks: {
-                                    beginAtZero: true,
                                     callback: function (value, index, values) {
                                         return value + " MB";
                                     }
                                 }
-                            }]
+                            }
                         },
-                        legend: {
-                            display: false
+                        plugins: {
+                            legend: {
+                                display: false
+                            }
                         },
                         spanGaps: true,
                         maintainAspectRatio: false
