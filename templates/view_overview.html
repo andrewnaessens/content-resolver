@@ -109,7 +109,7 @@
                                 <hr>
                                 <div class="row">
                                     <div class="col-4">
-                                        <span class="badge text-bg-secondary" style="background-color: #a39e87 !important">
+                                        <span class="buildroot-base badge text-bg-secondary">
                                             Base Buildroot</span>
                                         <br>
                                         {{ view_all_arches.numbers.pkgs.build_base }} <small>RPMs</small>
@@ -117,7 +117,7 @@
                                         {{ view_all_arches.numbers.srpms.build_base }} <small>SRPMs</small>
                                     </div>
                                     <div class="col-4">
-                                        <span class="badge text-bg-secondary" style="background-color: #999 !important">
+                                        <span class="buildroot-level-1 badge text-bg-secondary">
                                             Buildroot level 1</span>
                                         <br>
                                         {{ view_all_arches.numbers.pkgs.build_level_1 }} <small>RPMs</small>
@@ -125,7 +125,7 @@
                                         {{ view_all_arches.numbers.srpms.build_level_1 }} <small>SRPMs</small>
                                     </div>
                                     <div class="col-4">
-                                        <span class="badge text-bg-secondary" style="background-color: #999 !important">
+                                        <span class="buildroot-level-2 badge text-bg-secondary">
                                             Buildroot level 2+</span>
                                         <br>
                                         {{ view_all_arches.numbers.pkgs.build_level_2_plus }} <small>RPMs</small>
@@ -159,10 +159,10 @@
                         <span class="badge text-bg-secondary" style="background-color: #a39e87 !important">Base Buildroot</span>
                         - Packages always present in the buildroot. Typically the 'build' group.
                         <br>
-                        <span class="badge text-bg-secondary" style="background-color: #999 !important">Buildroot level 1</span>
+                        <span class="buildroot-level-1 badge text-bg-secondary">Buildroot level 1</span>
                         - Packages needed to build all the above.
                         <br>
-                        <span class="badge text-bg-secondary" style="background-color: #999 !important">Buildroot level 2+</span>
+                        <span class="buildroot-level-2 badge text-bg-secondary">Buildroot level 2+</span>
                         - Packages needed to build all the above. Basially just build dependencies of build
                         dependencies. There's multiple levels, each only present to build the previous level.
                         {% endif %}

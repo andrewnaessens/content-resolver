@@ -208,7 +208,7 @@
                 {% if level == "0" %}
                 <p>Includes <span class="badge text-bg-success">Required</span> and <span class="badge text-bg-secondary">Dependency</span>.</p>
                 {% else %}
-                <p>Includes <span class="badge text-bg-secondary" style="background-color: #999 !important">Buildroot level {{level}}</span> which are direct build dependencies of the previous level, along with their own runtime dependencies.</p>
+                <p>Includes <span class="buildroot-level-{{ level }} badge text-bg-secondary">Buildroot level {{level}}</span> which are direct build dependencies of the previous level, along with their own runtime dependencies.</p>
                 {% endif %}
                 <table class="table-packages table-packages-muted" id="table_packages_{{level}}">
                     <thead>
