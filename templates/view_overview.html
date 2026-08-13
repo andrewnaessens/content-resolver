@@ -552,15 +552,16 @@
                             tension: 0
                         }
                     },
-                    onClick: function(evt, elements) {
+                    onClick: function(evt, elements, chart) {
+                        const points = chart.getElementsAtEventForMode(evt, 'nearest', { intersect: true }, false);
                         // Clicking any part of the empty chart area clears the package lists display and resets the browse picker
-                        if (elements.length === 0) {
+                        if (points.length === 0) {
                             document.getElementById('historic-pkg-lists').innerHTML = '';
                             document.getElementById('browse-date').value = '';
                             return;
                         }
                         // Clicking on a chart dot displays the package lists for the selected date
-                        const index = elements[0]._index;
+                        const index = points[0].index;
                         const date = chartData.labels[index];
                         // Sync the browse picker to the clicked date
                         document.getElementById('browse-date').value = date;
