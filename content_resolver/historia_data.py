@@ -277,9 +277,6 @@ def _read_historic_data_daily(query):
             # Store filename so the browser knows which file to fetch for this date
             historic_daily[date]["_filename"] = filename
 
-    log("  Done!")
-    log("")
-
     return historic_daily
 
 def _generate_chartjs_data(historic_data, query):
