@@ -36,12 +36,7 @@
                 <!-- Browse by date -->
                 <div class="mb-3">
                     <label for="browse-date">Browse package lists by date</label>
-                    <select class="form-control form-control-sm" id="browse-date">
-                        <option value="">Select a date...</option>
-                        {% for date in historic_daily_dates.keys() | sort(reverse=True) %}
-                        <option value="{{date}}">{{date}}</option>
-                        {% endfor %}
-                    </select>
+                    <input type="text" class="form-control form-control-sm" id="browse-date" placeholder="Select a date...">
                 </div>
 
                 <!-- Package lists revealed by clicking chart or browse picker -->
@@ -54,20 +49,10 @@
                     <label>Compare two dates</label>
                     <div class="row g-2">
                         <div class="col">
-                            <select class="form-control form-control-sm" id="compare-date-a">
-                                <option value="">Date A...</option>
-                                {% for date in historic_daily_dates.keys() | sort(reverse=True) %}
-                                <option value="{{date}}">{{date}}</option>
-                                {% endfor %}
-                            </select>
+                            <input type="text" class="form-control form-control-sm" id="compare-date-a" placeholder="Date A...">
                         </div>
                         <div class="col">
-                            <select class="form-control form-control-sm" id="compare-date-b">
-                                <option value="">Date B...</option>
-                                {% for date in historic_daily_dates.keys() | sort(reverse=True) %}
-                                <option value="{{date}}">{{date}}</option>
-                                {% endfor %}
-                            </select>
+                            <input type="text" class="form-control form-control-sm" id="compare-date-b" placeholder="Date B...">
                         </div>
                         <div class="col-auto">
                             <select class="form-control form-control-sm" id="compare-field">
@@ -504,9 +489,42 @@
 
     $(document).ready(function () {
         // Initialize chart
-        let currentChart = null;
+        var currentChart = null;
         // Convert the Python dict to JSON
         const dailyDates = {{ historic_daily_dates | tojson }};
+
+        // Initialize calendar date picker 
+        // Only dates that have snapshots available are selectable
+        const availableDates = Object.keys(dailyDates);
+        var browsePicker = null;
+        var comparePickerA = null;
+        var comparePickerB = null;
+
+        if (typeof flatpickr !== 'undefined') {
+            // Browse by date
+            browsePicker = flatpickr('#browse-date', {
+                enable: availableDates,
+                dateFormat: 'Y-m-d',
+                onChange: function(selectedDates, dateStr) {
+                    if (!dateStr) {
+                        document.getElementById('historic-pkg-lists').innerHTML = '';
+                        return;
+                    }
+                    loadSnapshotForDate(dateStr);
+                }
+            });
+
+            // Compare two dates
+            comparePickerA = flatpickr('#compare-date-a', {
+                enable: availableDates,
+                dateFormat: 'Y-m-d'
+            });
+
+            comparePickerB = flatpickr('#compare-date-b', {
+                enable: availableDates,
+                dateFormat: 'Y-m-d'
+            });
+        }
 
         // Plot the graph (weekly or daily)
         function plot_graph(chartData, mode) {
@@ -551,17 +569,17 @@
                     },
                     onClick: function(evt, elements, chart) {
                         const points = chart.getElementsAtEventForMode(evt, 'nearest', { intersect: true }, false);
-                        // Clicking any part of the empty chart area clears the package lists display and resets the datepicker
+                        // Clicking any part of the empty chart area clears the package lists display and resets the date picker
                         if (points.length === 0) {
                             document.getElementById('historic-pkg-lists').innerHTML = '';
-                            document.getElementById('browse-date').value = '';
+                            if (browsePicker) browsePicker.clear();
                             return;
                         }
                         // Clicking on a chart dot displays the package lists for the selected date
                         const index = points[0].index;
                         const date = chartData.labels[index];
-                        // Sync the browse by date datepicker to the clicked date
-                        document.getElementById('browse-date').value = date;
+                        // Sync the browse by date date picker to the clicked date
+                        if (browsePicker) browsePicker.setDate(date);
                         loadSnapshotForDate(date);
                     }
                 }
@@ -729,10 +747,10 @@
             });
         });
 
-        // Reset compare — reset compare dropdowns and results to default state
+        // Reset compare — reset compare date pickers and results to default state
         document.getElementById('compare-reset-btn').addEventListener('click', function() {
-            document.getElementById('compare-date-a').value = '';
-            document.getElementById('compare-date-b').value = '';
+            if (comparePickerA) comparePickerA.clear();
+            if (comparePickerB) comparePickerB.clear();
             document.getElementById('compare-field').selectedIndex = 0;
             document.getElementById('compare-results').innerHTML = '';
         });
