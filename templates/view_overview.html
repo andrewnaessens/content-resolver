@@ -528,7 +528,7 @@
         }
 
         // Plot the graph (weekly or daily)
-        function plot_graph(chartData, mode) {
+        function plot_graph(chartData) {
             // Get the chart container
             const chLine = document.getElementById("chLine");
             if (!chLine) return;
@@ -709,7 +709,7 @@
             this.classList.add('active');
             document.getElementById('chart-toggle-daily').classList.remove('active');
             axios.get('chartjs-data--view--{{view_conf.id}}.json')
-                .then(function(response) { plot_graph(response.data, 'weekly'); });
+                .then(function(response) { plot_graph(response.data); });
         });
 
         // Daily - load daily chart data
@@ -717,7 +717,7 @@
             this.classList.add('active');
             document.getElementById('chart-toggle-weekly').classList.remove('active');
             axios.get('chartjs-data-daily--view--{{view_conf.id}}.json')
-                .then(function(response) { plot_graph(response.data, 'daily'); });
+                .then(function(response) { plot_graph(response.data); });
         });
 
         // Compare two dates — fetch both snapshots, then show the set difference
@@ -748,7 +748,7 @@
         // Load weekly chart data by default
         axios.get(`chartjs-data--view--{{view_conf.id}}.json`)
             .then(response => {
-                plot_graph(response.data, 'weekly')
+                plot_graph(response.data)
             })
     });
 
