@@ -499,22 +499,19 @@
 </div>
 
 <script>
-    // ─── Global variable ───
+    // Global variable (used by onclick attributes)
     var currentViewData = null;
 
     $(document).ready(function () {
-        // ─── Variables ───
         // Initialize chart
         let currentChart = null;
-        // Convert the Python dict to JSON for JS
+        // Convert the Python dict to JSON
         const dailyDates = {{ historic_daily_dates | tojson }};
 
-        // ─── Chart ───
         // Plot the graph (weekly or daily)
         function plot_graph(chartData, mode) {
             // Get the chart container
             const chLine = document.getElementById("chLine");
-            // If the container doesn't exist, return
             if (!chLine) return;
 
             // If a chart exists, destroy it
@@ -554,7 +551,7 @@
                     },
                     onClick: function(evt, elements, chart) {
                         const points = chart.getElementsAtEventForMode(evt, 'nearest', { intersect: true }, false);
-                        // Clicking any part of the empty chart area clears the package lists display and resets the browse picker
+                        // Clicking any part of the empty chart area clears the package lists display and resets the datepicker
                         if (points.length === 0) {
                             document.getElementById('historic-pkg-lists').innerHTML = '';
                             document.getElementById('browse-date').value = '';
@@ -563,7 +560,7 @@
                         // Clicking on a chart dot displays the package lists for the selected date
                         const index = points[0].index;
                         const date = chartData.labels[index];
-                        // Sync the browse picker to the clicked date
+                        // Sync the browse by date datepicker to the clicked date
                         document.getElementById('browse-date').value = date;
                         loadSnapshotForDate(date);
                     }
@@ -571,14 +568,13 @@
             });
         }
         
-        // ─── Snapshot loading ───
         // Fetch a daily snapshot by date and display its package lists
         function loadSnapshotForDate(date) {
-            // Look up filename from the date-to-filename map baked in by Jinja2
+            // Look up filename from the date-to-filename map
             var filename = dailyDates[date];
             if (!filename) return;
 
-            // Fetch the snapshot JSON from the static site
+            // Fetch the snapshot
             axios.get('history/' + filename)
                 .then(function(response) {
                     // Extract this view's data from the snapshot
@@ -588,14 +584,12 @@
                 });
         }
 
-        // Build HTML table for package lists matching the List Downloads card layout
+        // Build HTML table for package lists
         function displayPackageLists(date, viewData) {
             currentViewData = viewData;
             var container = document.getElementById('historic-pkg-lists');
             var html = '<h5 class="card-title text-center">Package Lists for ' + date + '</h5>' + '<hr>';
 
-            // Three sections: All, Runtime, Buildroot-only
-            // Each has SRPM Names and SRPM NEVRs
             var sections = [
                 {label: 'All', nameKey: 'all_source_names', nevrKey: 'all_source_nevrs'},
                 {label: 'Runtime', nameKey: 'runtime_source_names', nevrKey: 'runtime_source_nevrs'},
@@ -607,12 +601,11 @@
             html += '<tbody>';
 
             sections.forEach(function(section) {
-                // Skip if these list types are not in the snapshot
                 var names = viewData[section.nameKey];
                 var nevrs = viewData[section.nevrKey];
                 if (!names && !nevrs) return;
 
-                // Names row with section label as rowspan
+                // Names
                 html += '<tr>';
                 html += '<td rowspan=2 class="align-middle"> ' + section.label + ' </td>';
                 html += '<td rowspan=2 class="align-middle"> SRPM </td>';
@@ -623,7 +616,7 @@
                     html += '<a class="card-link" href="#" '
                          +  'onclick="viewTxt(currentViewData[\'' + section.nameKey + '\']); return false;">'
                          +  'All Arches</a> (' + names.length + ') ';
-                    // "Download .txt" triggers a file save via Blob
+                    // "Download .txt" triggers a file download
                     html += '<a class="card-link" href="#" '
                          +  'onclick="downloadTxt(\'' + section.nameKey + '--' + date + '\', '
                          +  'currentViewData[\'' + section.nameKey + '\']); return false;">'
@@ -632,7 +625,7 @@
                 html += '</td>';
                 html += '</tr>';
 
-                // NEVRs row
+                // NEVRs
                 html += '<tr>';
                 html += '<td> NEVRs </td>';
                 html += '<td>';
@@ -655,10 +648,9 @@
             container.innerHTML = html;
         }
 
-        // ─── Comparison ───
-        // Compare two dates' package lists and show the set difference
+        // Compare package lists for two dates and show the set difference
         function displayComparison(dateA, dateB, viewA, viewB) {
-            // Get the selected list type from the dropdown
+            // Get the selected package list type from the dropdown
             var field = document.getElementById('compare-field').value;
             var setA = new Set(viewA[field] || []);
             var setB = new Set(viewB[field] || []);
@@ -692,9 +684,7 @@
                 + '</div>';
         }
 
-        // ─── Event listeners ───
-        // Chart toggle — toggle between weekly and daily chart data
-        // Each button loads a different JSON file and replaces the chart entirely
+        // Chart toggle - toggle between weekly and daily chart data
         // Weekly - load weekly chart data
         document.getElementById('chart-toggle-weekly').addEventListener('click', function() {
             this.classList.add('active');
@@ -702,6 +692,7 @@
             axios.get('chartjs-data--view--{{view_conf.id}}.json')
                 .then(function(response) { plot_graph(response.data, 'weekly'); });
         });
+
         // Daily - load daily chart data
         document.getElementById('chart-toggle-daily').addEventListener('click', function() {
             this.classList.add('active');
@@ -710,7 +701,7 @@
                 .then(function(response) { plot_graph(response.data, 'daily'); });
         });
 
-        // Browse picker — selecting a date loads that snapshot's package lists
+        // Browse by date — selecting a date loads that snapshot's package lists
         document.getElementById('browse-date').addEventListener('change', function() {
             // Selecting the default "Select a date..." option clears the displayed package list
             if (!this.value) {
@@ -721,7 +712,7 @@
             loadSnapshotForDate(this.value);
         });
 
-        // Compare — fetch both snapshots in parallel, then show the set difference
+        // Compare two dates — fetch both snapshots, then show the set difference
         document.getElementById('compare-btn').addEventListener('click', function() {
             var dateA = document.getElementById('compare-date-a').value;
             var dateB = document.getElementById('compare-date-b').value;
@@ -753,7 +744,7 @@
             })
     });
 
-    // ─── Utility functions (used by onclick attributes) ───
+    // Utility functions (used by onclick attributes)
     // View text — open a new tab with the list data
     function viewTxt(data) {
         var blob = new Blob([data.join('\n')], {type: 'text/plain'});
