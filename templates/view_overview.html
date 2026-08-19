@@ -510,6 +510,7 @@
                         document.getElementById('historic-pkg-lists').innerHTML = '';
                         return;
                     }
+                    // Load the package lists for the selected date
                     loadSnapshotForDate(dateStr);
                 }
             });
@@ -717,17 +718,6 @@
             document.getElementById('chart-toggle-weekly').classList.remove('active');
             axios.get('chartjs-data-daily--view--{{view_conf.id}}.json')
                 .then(function(response) { plot_graph(response.data, 'daily'); });
-        });
-
-        // Browse by date — selecting a date loads that snapshot's package lists
-        document.getElementById('browse-date').addEventListener('change', function() {
-            // Selecting the default "Select a date..." option clears the displayed package list
-            if (!this.value) {
-                document.getElementById('historic-pkg-lists').innerHTML = '';
-                return;
-            }
-            // Load the package lists for the selected date
-            loadSnapshotForDate(this.value);
         });
 
         // Compare two dates — fetch both snapshots, then show the set difference
