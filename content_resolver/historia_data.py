@@ -110,12 +110,13 @@ def _save_current_historic_data_daily(query):
     file_path = os.path.join(output_dir, filename)
 
     # What to save there
-    history_data = {}
-    history_data["date"] = str(now.strftime("%Y-%m-%d"))
-    history_data["workloads"] = {}
-    history_data["envs"] = {}
-    history_data["repos"] = {}
-    history_data["views"] = {}
+    history_data = {
+        "date": str(now.strftime("%Y-%m-%d")),
+        "workloads": {},
+        "envs": {},
+        "repos": {},
+        "views": {},
+    }
 
     # Workloads
     for workload_id in query.workloads(None,None,None,None,list_all=True):
@@ -124,9 +125,10 @@ def _save_current_historic_data_daily(query):
         if not workload["succeeded"]:
             continue
 
-        workload_history = {}
-        workload_history["size"] = query.workload_size_id(workload_id)
-        workload_history["pkg_count"] = len(query.workload_pkgs_id(workload_id))
+        workload_history = {
+            "size": query.workload_size_id(workload_id),
+            "pkg_count": len(query.workload_pkgs_id(workload_id)),
+        }
 
         history_data["workloads"][workload_id] = workload_history
 
@@ -137,9 +139,10 @@ def _save_current_historic_data_daily(query):
         if not env["succeeded"]:
             continue
 
-        env_history = {}
-        env_history["size"] = query.env_size_id(env_id)
-        env_history["pkg_count"] = len(query.env_pkgs_id(env_id))
+        env_history = {
+            "size": query.env_size_id(env_id),
+            "pkg_count": len(query.env_pkgs_id(env_id)),
+        }
 
         history_data["envs"][env_id] = env_history
 
@@ -149,8 +152,9 @@ def _save_current_historic_data_daily(query):
 
         for arch, pkgs in query.data["pkgs"][repo_id].items():
 
-            repo_history = {}
-            repo_history["pkg_count"] = len(pkgs)
+            repo_history = {
+                "pkg_count": len(pkgs),
+            }
 
             history_data["repos"][repo_id][arch] = repo_history
 
@@ -158,12 +162,12 @@ def _save_current_historic_data_daily(query):
     for view_conf_id, view_conf in query.configs["views"].items():
         view_all_arches = query.data["views_all_arches"][view_conf_id]
 
-        view_data = {}
-
         # Chart metrics
-        view_data["srpm_count_env"] = view_all_arches["numbers"]["srpms"]["env"]
-        view_data["srpm_count_req"] = view_all_arches["numbers"]["srpms"]["req"]
-        view_data["srpm_count_dep"] = view_all_arches["numbers"]["srpms"]["dep"]
+        view_data = {
+            "srpm_count_env": view_all_arches["numbers"]["srpms"]["env"],
+            "srpm_count_req": view_all_arches["numbers"]["srpms"]["req"],
+            "srpm_count_dep": view_all_arches["numbers"]["srpms"]["dep"],
+        }
 
         if view_all_arches["has_buildroot"]:
             view_data["srpm_count_build_base"] = view_all_arches["numbers"]["srpms"]["build_base"]
