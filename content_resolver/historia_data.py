@@ -277,7 +277,7 @@ def _read_historic_data_daily(query):
     valid_filenames.sort()
 
     # Get the data
-    historic_daily = {}
+    historic_data_daily = {}
 
     for filename in valid_filenames:
         with open(os.path.join(directory, filename), "r") as file:
@@ -290,14 +290,14 @@ def _read_historic_data_daily(query):
                 ))
                 continue
 
-            historic_daily[date] = document
+            historic_data_daily[date] = document
             # Store filename so the browser knows which file to fetch for this date
-            historic_daily[date]["_filename"] = filename
+            historic_data_daily[date]["_filename"] = filename
 
     log("  Done!")
     log("")
 
-    return historic_daily
+    return historic_data_daily
 
 def _generate_chartjs_data(historic_data, query, prefix=""):
 
@@ -742,15 +742,15 @@ def generate_historic_data(query):
 
     # Step 2: Read historic data
     historic_data = _read_historic_data(query)
-    historic_daily = _read_historic_data_daily(query)
+    historic_data_daily = _read_historic_data_daily(query)
 
     # Step 3: Generate Chart.js data
     _generate_chartjs_data(historic_data, query)
-    _generate_chartjs_data(historic_daily, query, prefix="-daily")
+    _generate_chartjs_data(historic_data_daily, query, prefix="-daily")
 
     # Date-to-filename map for the browser to fetch daily snapshots
     query.data["historic_daily_dates"] = {
-        date: entry["_filename"] for date, entry in historic_daily.items()
+        date: entry["_filename"] for date, entry in historic_data_daily.items()
     }
 
     log("Done!")
